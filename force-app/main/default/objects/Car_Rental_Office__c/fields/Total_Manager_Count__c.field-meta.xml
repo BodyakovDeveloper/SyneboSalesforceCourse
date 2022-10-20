@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Total_Manager_Count__c</fullName>
+    <externalId>false</externalId>
+    <label>Total Manager Count</label>
+    <summaryFilterItems>
+        <field>Office_Employee__c.Position__c</field>
+        <operation>equals</operation>
+        <value>Manager</value>
+    </summaryFilterItems>
+    <summaryForeignKey>Office_Employee__c.Car_Rental_Office__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

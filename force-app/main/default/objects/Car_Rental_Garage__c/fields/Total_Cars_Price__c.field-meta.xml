@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Total_Cars_Price__c</fullName>
+    <externalId>false</externalId>
+    <label>Total Cars Price</label>
+    <summarizedField>Car__c.Price__c</summarizedField>
+    <summaryForeignKey>Car__c.Car_Rental_Garage__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

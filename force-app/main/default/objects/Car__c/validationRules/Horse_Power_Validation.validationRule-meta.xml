@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Horse_Power_Validation</fullName>
+    <active>true</active>
+    <errorConditionFormula>Horse_Power__c &lt; 0</errorConditionFormula>
+    <errorDisplayField>Horse_Power__c</errorDisplayField>
+    <errorMessage>Horse power cannot be less than 0.</errorMessage>
+</ValidationRule>
