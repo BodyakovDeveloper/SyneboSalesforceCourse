@@ -26,10 +26,10 @@ public with sharing class CarHandler {
                                        GROUP BY Car_Rental_Garage__r.Car_Rental_Office__c] ;
         if (aggrs.size() > 0){
             for (AggregateResult aggr : aggrs){
-                Car_Rental_Office__c offObj = new Car_Rental_Office__c();
-                offObj.Id = (id)aggr.get('Car_Rental_Office__c');
-                offObj.Number_Of_Related_Cars__c =(decimal)aggr.get('carNum') ;
-                offToUpdate.add(offObj);
+                Car_Rental_Office__c office = new Car_Rental_Office__c();
+                office.Id = (id)aggr.get('Car_Rental_Office__c');
+                office.Number_Of_Related_Cars__c =(decimal)aggr.get('carNum') ;
+                offToUpdate.add(office);
             }
                 update offToUpdate;
         }
