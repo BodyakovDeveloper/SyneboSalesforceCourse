@@ -1,20 +1,21 @@
-public with sharing class CarHandler {
-
-    public static void changeHorsePowerToZeroOnUnsuitableValue(List<Car__c> cars) {
-        for (Car__c car_i : cars) {
-            if (car_i.Horse_Power__c < 0) {
-                car_i.Horse_Power__c = 0;
-            }
-        }
+public with sharing class CountOfRelatedCarsToOffice implements Database.Batchable<SObject>, Schedulable {
+   
+    public void execute(SchedulableContext sc) {
+        Database.executeBatch(new CountOfRelatedCarsToOffice(), 200);
+    }
+   
+    public Database.QueryLocator start(Database.BatchableContext bc) {
+        String query = 'SELECT Id FROM Car__c';
+        return Database.getQueryLocator(query);
     }
 
-    public static void changeCarsCountRelatedToOffice(List<Car__c> carList){
+    public void execute(Database.BatchableContext bc, List<Car__c> scope) {
         Set<Id> garageIdSet = new Set<Id>();
         Set<Id> officeIdSet = new Set<Id>();
     
         List<Car_Rental_Office__c> offToUpdate = new List<Car_Rental_Office__c>();
 
-        for (Car__c car_i: carList){
+        for (Car__c car_i: scope){
             garageIdSet.add(car_i.Car_Rental_Garage__c);
         }
 
@@ -64,4 +65,11 @@ public with sharing class CarHandler {
             }   
         }
     }
+
+    public void finish(Database.BatchableContext bc) {
+        System.debug('CountOfRelatedCarsToOffice is done, ' + DateTime.now());
+    }
 }
+
+// String cronExp = '0 0 0 ? * * *';
+// System.Schedule('CountOfRelatedCarsToOffice', cronExp, new CountOfRelatedCarsToOffice());

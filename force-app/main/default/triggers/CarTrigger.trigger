@@ -1,14 +1,17 @@
 trigger CarTrigger on Car__c (before insert, after insert, after delete) {
     if (Trigger.isBefore) {
         if (Trigger.isInsert) {
-            CarHandler.skipHorsePowerValidation(Trigger.new);  // changeHorsePowerToZeroOnUnsuitableValue
+            CarHandler.changeHorsePowerToZeroOnUnsuitableValue(Trigger.new);  // skipHorsePowerValidation
         }
     }
 
     if (Trigger.isAfter) {
         if (Trigger.isInsert) {
             CarHandler.changeCarsCountRelatedToOffice(Trigger.new);
-        } else if (Trigger.isDelete) {
+        } else if (Trigger.isUpdate) {
+            CarHandler.changeCarsCountRelatedToOffice(Trigger.new);
+        }
+        else if (Trigger.isDelete) {
             CarHandler.changeCarsCountRelatedToOffice(Trigger.old);
         }
     }
