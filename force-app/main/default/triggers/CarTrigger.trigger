@@ -1,4 +1,4 @@
-trigger CarTrigger on Car__c (before insert, after insert, after delete) {
+trigger CarTrigger on Car__c (before insert, after insert, after update, after delete) {
     if (Trigger.isBefore) {
         if (Trigger.isInsert) {
             CarHandler.changeHorsePowerToZeroOnUnsuitableValue(Trigger.new);  // skipHorsePowerValidation
@@ -10,8 +10,8 @@ trigger CarTrigger on Car__c (before insert, after insert, after delete) {
             CarHandler.changeCarsCountRelatedToOffice(Trigger.new);
         } else if (Trigger.isUpdate) {
             CarHandler.changeCarsCountRelatedToOffice(Trigger.new);
-        }
-        else if (Trigger.isDelete) {
+            System.enqueueJob(new GetJsonPlaceholderPostsQueueable());
+        } else if (Trigger.isDelete) {            
             CarHandler.changeCarsCountRelatedToOffice(Trigger.old);
         }
     }

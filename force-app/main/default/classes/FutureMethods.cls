@@ -1,21 +1,16 @@
-public with sharing class CountOfRelatedCarsToOffice implements Database.Batchable<SObject>, Schedulable {
-   
-    public void execute(SchedulableContext sc) {
-        Database.executeBatch(new CountOfRelatedCarsToOffice(), 200);
-    }
-   
-    public Database.QueryLocator start(Database.BatchableContext bc) {
-        String query = 'SELECT Id FROM Car__c';
-        return Database.getQueryLocator(query);
-    }
+public class FutureMethods {
+    
+    @future(callout=false)
+    public static void countRelatedCarsToOffice(List<Id> carIdList) {
 
-    public void execute(Database.BatchableContext bc, List<Car__c> scope) {
+        List<Car__c> carList = [SELECT Id, Car_Rental_Garage__c FROM Car__c WHERE Id IN :carIdList];
+
         Set<Id> garageIdSet = new Set<Id>();
         Set<Id> officeIdSet = new Set<Id>();
     
         List<Car_Rental_Office__c> offToUpdate = new List<Car_Rental_Office__c>();
 
-        for (Car__c car_i: scope){
+        for (Car__c car_i: carList){
             garageIdSet.add(car_i.Car_Rental_Garage__c);
         }
 
@@ -65,11 +60,4 @@ public with sharing class CountOfRelatedCarsToOffice implements Database.Batchab
             }   
         }
     }
-
-    public void finish(Database.BatchableContext bc) {
-        System.debug('CountOfRelatedCarsToOffice is done, ' + DateTime.now());
-    }
 }
-
-// String cronExp = '0 0 0 ? * * *';
-// System.Schedule('CountOfRelatedCarsToOffice', cronExp, new CountOfRelatedCarsToOffice());
