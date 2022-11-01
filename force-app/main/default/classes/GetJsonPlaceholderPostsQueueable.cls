@@ -11,10 +11,10 @@ public class GetJsonPlaceholderPostsQueueable implements Queueable, Database.All
         System.debug(response.getStatusCode());
         // If the request is successful, parse the JSON response
         if (response.getStatusCode() == 200) {
-            List<Json_Callout_Object__c> calloutObjects = new List<Json_Callout_Object__c>();
+            List<Placeholder_Post__c> calloutObjects = new List<Placeholder_Post__c>();
             List<PostWrapper> posts = PostWrapper.parse(response.getBody());
             for (PostWrapper post : posts) {
-                Json_Callout_Object__c calloutObj = new Json_Callout_Object__c();
+                Placeholder_Post__c calloutObj = new Placeholder_Post__c();
                 calloutObj.Body__c = post.body;
                 calloutObj.Post_Id__c = post.id;
                 calloutObj.Title__c = post.title;
@@ -23,6 +23,6 @@ public class GetJsonPlaceholderPostsQueueable implements Queueable, Database.All
             }
             upsert calloutObjects Post_Id__c;
         }
-        System.enqueueJob(new PostJsonPlaceholderPostQueueable());
+        System.enqueueJob(new GetPlaceholderCommentsQueueable());
     }
 }

@@ -4,12 +4,12 @@ global with sharing class RestServicePlaceholderPosts {
     // [GET]
     // /services/apexrest/post/a0E7S000000bcVX
     @HttpGet
-    global static Json_Callout_Object__c getPost() {
+    global static Placeholder_Post__c getPost() {
         RestRequest req = RestContext.request;
         RestResponse res = RestContext.response;
         String postId = req.requestURI.substring(req.requestURI.lastIndexOf('/') + 1);
-        Json_Callout_Object__c result = [SELECT Id, Post_Id__c, Title__c, Body__c, User_Id__c 
-                                         FROM Json_Callout_Object__c 
+        Placeholder_Post__c result = [SELECT Id, Post_Id__c, Title__c, Body__c, User_Id__c 
+                                         FROM Placeholder_Post__c 
                                          WHERE Id = :postId];
         return result;
     }
@@ -25,7 +25,7 @@ global with sharing class RestServicePlaceholderPosts {
     @HttpPost
     global static Id savePost() {
         RestRequest req = RestContext.request;
-        Json_Callout_Object__c jsonCalloutObject = (Json_Callout_Object__c) JSON.deserialize(req.requestBody.toString(), Json_Callout_Object__c.class);
+        Placeholder_Post__c jsonCalloutObject = (Placeholder_Post__c) JSON.deserialize(req.requestBody.toString(), Placeholder_Post__c.class);
         if (jsonCalloutObject != null) {
             insert jsonCalloutObject;
         }
@@ -39,7 +39,7 @@ global with sharing class RestServicePlaceholderPosts {
         RestRequest req = RestContext.request;
         RestResponse res = RestContext.response;
         String objId = req.requestURI.substring(req.requestURI.lastIndexOf('/') + 1);
-        Json_Callout_Object__c objToDelete = [SELECT Id FROM Json_Callout_Object__c WHERE Id = :objId];
+        Placeholder_Post__c objToDelete = [SELECT Id FROM Placeholder_Post__c WHERE Id = :objId];
        
         if (objToDelete != null) {
             delete objToDelete;
@@ -59,9 +59,9 @@ global with sharing class RestServicePlaceholderPosts {
         RestRequest req = RestContext.request;
         RestResponse res = RestContext.response;
         String objId = req.requestURI.substring(req.requestURI.lastIndexOf('/') + 1);
-        Json_Callout_Object__c objToUpdate = [SELECT Id FROM Json_Callout_Object__c WHERE Id = :objId];
+        Placeholder_Post__c objToUpdate = [SELECT Id FROM Placeholder_Post__c WHERE Id = :objId];
         if (objToUpdate != null) {
-            Json_Callout_Object__c jsonCalloutObject = (Json_Callout_Object__c) JSON.deserialize(req.requestBody.toString(), Json_Callout_Object__c.class);
+            Placeholder_Post__c jsonCalloutObject = (Placeholder_Post__c) JSON.deserialize(req.requestBody.toString(), Placeholder_Post__c.class);
             objToUpdate.Body__c = jsonCalloutObject.Body__c;
             objToUpdate.Post_Id__c = jsonCalloutObject.Post_Id__c;
             objToUpdate.Title__c = jsonCalloutObject.Title__c;

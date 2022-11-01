@@ -13,22 +13,24 @@ public class GetPlaceholderCommentsQueueable implements Queueable, Database.Allo
         if (response.getStatusCode() == 200) {
             List<Placeholder_Comment__c> commentsToUpsert = new List<Placeholder_Comment__c>();
             List<CommentWrapper> commetsFromWrapper = CommentWrapper.parse(response.getBody());
-
-            Set<Id> postIdSet = new Set<Id>();
-
-            for (Placeholder_Comment__c comment : commetsFromWrapper) {
-                postIdSet.add();
+            System.debug(commetsFromWrapper);
+            Set<String> postIdSet = new Set<String>();
+            for (CommentWrapper comment : commetsFromWrapper) {
+                postIdSet.add(comment.postId);
             }
+            System.debug('21');
 
-            List<Placeholder_Post__c> postMap = [SELECT Placeholder_Post__c.Post_Id__c, Id FROM Placeholder_Post__c WHERE Post_Id__c IN: postIdSet];
-            System.debug(postMap);
-        
+            List<Placeholder_Post__c> posts = [SELECT Placeholder_Post__c.Post_Id__c, Id FROM Placeholder_Post__c WHERE Post_Id__c IN: postIdSet];
+            System.debug('24');
+            Map<String, Id> postIdMap = new Map<String, Id>();
+            for (Placeholder_Post__c post : posts) {
+                postIdMap.put(post.Post_Id__c, post.Id);
+            }
+            System.debug('29');
             for (CommentWrapper cfw : commetsFromWrapper) {
                 Placeholder_Comment__c comment = new Placeholder_Comment__c();
-                System.debug(postMap.get(cfw.postId));
-                System.debug(postMap.get(cfw.postId).Id);
 
-                comment.Placeholder_Post__c = postMap.get(cfw.postId).Id;
+                comment.Placeholder_Post__c = postIdMap.get(cfw.postId);
                 comment.Comment_Id__c = cfw.id;
                 comment.Name__c = cfw.name;
                 comment.Email__c = cfw.email;
