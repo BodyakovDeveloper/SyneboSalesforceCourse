@@ -18,15 +18,12 @@ public class GetPlaceholderCommentsQueueable implements Queueable, Database.Allo
             for (CommentWrapper comment : commetsFromWrapper) {
                 postIdSet.add(comment.postId);
             }
-            System.debug('21');
 
             List<Placeholder_Post__c> posts = [SELECT Placeholder_Post__c.Post_Id__c, Id FROM Placeholder_Post__c WHERE Post_Id__c IN: postIdSet];
-            System.debug('24');
             Map<String, Id> postIdMap = new Map<String, Id>();
             for (Placeholder_Post__c post : posts) {
                 postIdMap.put(post.Post_Id__c, post.Id);
             }
-            System.debug('29');
             for (CommentWrapper cfw : commetsFromWrapper) {
                 Placeholder_Comment__c comment = new Placeholder_Comment__c();
 
