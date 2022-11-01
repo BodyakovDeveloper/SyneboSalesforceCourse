@@ -10,7 +10,7 @@ public class FutureMethods {
     
         List<Car_Rental_Office__c> offToUpdate = new List<Car_Rental_Office__c>();
 
-        for (Car__c car_i: carList){
+        for (Car__c car_i: carList) {
             garageIdSet.add(car_i.Car_Rental_Garage__c);
         }
 

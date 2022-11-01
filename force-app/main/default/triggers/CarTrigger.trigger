@@ -10,7 +10,6 @@ trigger CarTrigger on Car__c (before insert, after insert, after update, after d
             CarHandler.changeCarsCountRelatedToOffice(Trigger.new);
         } else if (Trigger.isUpdate) {
             CarHandler.changeCarsCountRelatedToOffice(Trigger.new);
-            System.enqueueJob(new GetJsonPlaceholderPostsQueueable());
         } else if (Trigger.isDelete) {            
             CarHandler.changeCarsCountRelatedToOffice(Trigger.old);
         }
