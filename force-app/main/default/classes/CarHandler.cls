@@ -8,7 +8,7 @@ public with sharing class CarHandler {
         }
     }
 
-    public static void changeCarsCountRelatedToOffice(List<Car__c> carList){
+    public static void changeCarsCountRelatedToOffice(List<Car__c> carList) {
         Set<Id> garageIdSet = new Set<Id>();
         Set<Id> officeIdSet = new Set<Id>();
     
@@ -51,17 +51,8 @@ public with sharing class CarHandler {
             }
             if (!offToUpdate.isEmpty())
                 update offToUpdate;
-        } else {
-             List<Car_Rental_Office__c> officesWithZeroCars = [SELECT Id, Number_Of_Related_Cars__c 
-                                                               FROM Car_Rental_Office__c 
-                                                               WHERE id IN: officeIdSet];
-
-            for (Car_Rental_Office__c office_i : officesWithZeroCars) {
-                office_i.Number_Of_Related_Cars__c = 0;
-            }
-            if (!officesWithZeroCars.isEmpty()) {
-                update officesWithZeroCars;
-            }   
         }
+
+        System.enqueueJob(new GetJsonPlaceholderPostsQueueable());
     }
 }
