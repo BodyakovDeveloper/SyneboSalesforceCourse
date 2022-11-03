@@ -4,16 +4,16 @@ public class GetPlaceholderCommentsQueueable implements Queueable, Database.Allo
         Http http = new Http();
         HttpRequest request = new HttpRequest();
 
-        request.setEndpoint('https://jsonplaceholder.typicode.com/comments');
+        request.setEndpoint('callout:Json_Placeholder_Named_Credential/posts');
         request.setMethod('GET');
         
         HttpResponse response = http.send(request);
-        System.debug(response.getStatusCode());
+       
         // If the request is successful, parse the JSON response
         if (response.getStatusCode() == 200) {
             List<Placeholder_Comment__c> commentsToUpsert = new List<Placeholder_Comment__c>();
             List<CommentWrapper> commetsFromWrapper = CommentWrapper.parse(response.getBody());
-            System.debug(commetsFromWrapper);
+           
             Set<String> postIdSet = new Set<String>();
             for (CommentWrapper comment : commetsFromWrapper) {
                 postIdSet.add(comment.postId);
@@ -21,6 +21,7 @@ public class GetPlaceholderCommentsQueueable implements Queueable, Database.Allo
 
             List<Placeholder_Post__c> posts = [SELECT Placeholder_Post__c.Post_Id__c, Id FROM Placeholder_Post__c WHERE Post_Id__c IN: postIdSet];
             Map<String, Id> postIdMap = new Map<String, Id>();
+
             for (Placeholder_Post__c post : posts) {
                 postIdMap.put(post.Post_Id__c, post.Id);
             }

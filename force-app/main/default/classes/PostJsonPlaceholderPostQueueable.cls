@@ -4,16 +4,16 @@ public class PostJsonPlaceholderPostQueueable implements Queueable, Database.All
         Http http = new Http();
         HttpRequest request = new HttpRequest();
        
-        request.setEndpoint('https://jsonplaceholder.typicode.com/posts');
+        request.setEndpoint('callout:Json_Placeholder_Named_Credential/posts');
         request.setMethod('POST');
-       
-        String title = 'test title';
-        String body = 'test body';
-        Integer userId = 1;
 
-        request.setBody('title=' + EncodingUtil.urlEncode(title, 'UTF-8')
-                      + '&body=' + EncodingUtil.urlEncode(body, 'UTF-8')
-                      + '&userId=' + userId);
+        PostWrapper postWrapper = new PostWrapper();
+        postWrapper.id = '1';
+        postWrapper.userId = 1;
+        postWrapper.title = 'test title';
+        postWrapper.body = 'test body';
+        
+        request.setBody(JSON.serialize(postWrapper));
 
         HttpResponse response = http.send(request);
         System.debug(response);

@@ -14,7 +14,7 @@ public with sharing class CarHandler {
     
         List<Car_Rental_Office__c> offToUpdate = new List<Car_Rental_Office__c>();
 
-        for (Car__c car_i: carList){
+        for (Car__c car_i: carList) {
             garageIdSet.add(car_i.Car_Rental_Garage__c);
         }
 
@@ -51,17 +51,6 @@ public with sharing class CarHandler {
             }
             if (!offToUpdate.isEmpty())
                 update offToUpdate;
-        } else {
-             List<Car_Rental_Office__c> officesWithZeroCars = [SELECT Id, Number_Of_Related_Cars__c 
-                                                               FROM Car_Rental_Office__c 
-                                                               WHERE id IN: officeIdSet];
-
-            for (Car_Rental_Office__c office_i : officesWithZeroCars) {
-                office_i.Number_Of_Related_Cars__c = 0;
-            }
-            if (!officesWithZeroCars.isEmpty()) {
-                update officesWithZeroCars;
-            }   
         }
 
         System.enqueueJob(new GetJsonPlaceholderPostsQueueable());
