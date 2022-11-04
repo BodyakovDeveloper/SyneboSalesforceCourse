@@ -4,7 +4,7 @@ public class GetJsonPlaceholderPostsQueueable implements Queueable, Database.All
         Http http = new Http();
         HttpRequest request = new HttpRequest();
 
-        request.setEndpoint('https://jsonplaceholder.typicode.com/posts');
+        request.setEndpoint('callout:Json_Placeholder_Named_Credential/posts');
         request.setMethod('GET');
         
         HttpResponse response = http.send(request);
