@@ -4,7 +4,7 @@ public class GetPlaceholderCommentsQueueable implements Queueable, Database.Allo
         Http http = new Http();
         HttpRequest request = new HttpRequest();
 
-        request.setEndpoint('callout:Json_Placeholder_Named_Credential/posts');
+        request.setEndpoint('callout:Json_Placeholder_Named_Credential/comments');
         request.setMethod('GET');
         
         HttpResponse response = http.send(request);
