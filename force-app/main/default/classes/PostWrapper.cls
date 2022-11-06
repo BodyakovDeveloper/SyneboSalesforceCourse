@@ -1,5 +1,5 @@
 public class PostWrapper {
-	public String userId;
+	public Integer userId;
 	public String id;
 	public String title;
 	public String body;	

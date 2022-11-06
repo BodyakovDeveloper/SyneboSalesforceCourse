@@ -1,15 +1,6 @@
-Http http = new Http();
-        HttpRequest request = new HttpRequest();
-       
-        request.setEndpoint('callout:Json_Placeholder_Named_Credential/posts');
-        request.setMethod('POST');
+List<AggregateResult>  aggrs = [SELECT Car_Rental_Garage__r.Car_Rental_Office__c, count(Id)carNum
+FROM Car__c 
+WHERE Active__c = true AND Car_Rental_Garage__r.Car_Rental_Office__c IN: officeIdSet
+GROUP BY Car_Rental_Garage__r.Car_Rental_Office__c];
 
-        PostWrapper postWrapper = new PostWrapper();
-        postWrapper.id = '1';
-        postWrapper.userId = 1;
-        postWrapper.title = 'test title';
-        postWrapper.body = 'test body';
-        request.setBody(JSON.serialize(postWrapper));
-
-        HttpResponse response = http.send(request);
-        System.debug(response);
+System.debug(aggrs);
