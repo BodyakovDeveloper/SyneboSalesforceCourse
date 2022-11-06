@@ -10,60 +10,49 @@ public with sharing class CountOfRelatedCarsToOfficeBatch implements Database.Ba
     }
 
     public void execute(Database.BatchableContext bc, List<Car__c> scope) {
-        Set<Id> garageIdSet = new Set<Id>();
-        Set<Id> officeIdSet = new Set<Id>();
-    
-        List<Car_Rental_Office__c> offToUpdate = new List<Car_Rental_Office__c>();
+        Set<Id> garagesId = new Set<Id>();
+        for(Car__c car_i : scope) {
+            garagesId.add(car_i.Car_Rental_Garage__c);
+        }
+        Map<Id, Car_Rental_Garage__c> garageRecordsMap = new Map<Id, Car_Rental_Garage__c>([SELECT Car_Rental_Office__c FROM Car_Rental_Garage__c WHERE Id IN :garagesId]);
+        Set<Id> officesIdSet = new Set<Id>();
+        
+        for (Car_Rental_Garage__c garage_i : garageRecordsMap.values()) {
+            officesIdSet.add(garage_i.Car_Rental_Office__c);
+        }
+        
+        Map<Id, Car_Rental_Office__c> officeRecordsMap = new Map<Id, Car_Rental_Office__c>([SELECT Id, Number_Of_Related_Cars__c FROM Car_Rental_Office__c WHERE Id IN : officesIdSet]);
+        Set<Car_Rental_Office__c> officeSet = new Set<Car_Rental_Office__c>();
 
-        for (Car__c car_i: scope){
-            garageIdSet.add(car_i.Car_Rental_Garage__c);
+        for(Car_Rental_Office__c office_i : officeRecordsMap.values()) {
+            officeSet.add(office_i);
         }
 
-        for (Car_Rental_Garage__c garage_i : [SELECT Id, Car_Rental_Office__c 
-                                              FROM Car_Rental_Garage__c 
-                                              WHERE Id IN: garageIdSet]) {
-            officeIdSet.add(garage_i.Car_Rental_Office__c);
-        }
-
-        Map<Id, Car_Rental_Office__c> officeMap = new Map<Id, Car_Rental_Office__c>
-                                     ([SELECT Id, Number_Of_Related_Cars__c
-                                       FROM Car_Rental_Office__c 
-                                       WHERE Id IN: officeIdSet]);
-                                       
-        List<AggregateResult>  aggrs = [SELECT Car_Rental_Garage__r.Car_Rental_Office__c, count(Id)carNum
-                                       FROM Car__c 
-                                       WHERE Active__c = true AND Car_Rental_Garage__r.Car_Rental_Office__c IN: officeIdSet
+        List<AggregateResult> aggrs = [SELECT Car_Rental_Garage__r.Car_Rental_Office__c, count(Id) carNum
+                                       FROM Car__c
+                                       WHERE Active__c = true AND Car_Rental_Garage__r.Car_Rental_Office__c IN: officesIdSet
                                        GROUP BY Car_Rental_Garage__r.Car_Rental_Office__c];
- 
-        if (aggrs.size() > 0) {
-            for (AggregateResult aggr : aggrs) {
-                Id officeId = (id) aggr.get('Car_Rental_Office__c');
-                Car_Rental_Office__c officeWithOldValue = officeMap.get(officeId);
 
-                Decimal oldValue = officeWithOldValue.Number_Of_Related_Cars__c;
-                Decimal newValue = (Decimal) aggr.get('carNum');
+        for (AggregateResult aggr : aggrs) {
 
-                if (oldValue != newValue) {
-                    Car_Rental_Office__c office = new Car_Rental_Office__c();
-                    office.Id = officeId;
-                    office.Number_Of_Related_Cars__c = newValue;
-                    offToUpdate.add(office);
-                }
+            Id officeId = (id) aggr.get('Car_Rental_Office__c');
+            Car_Rental_Office__c office = officeRecordsMap.get(officeId);
+            if (officeSet.contains(office)) {
+                officeSet.remove(office);
             }
-            if (!offToUpdate.isEmpty())
-                update offToUpdate;
-        } else {
-             List<Car_Rental_Office__c> officesWithZeroCars = [SELECT Id, Number_Of_Related_Cars__c 
-                                                               FROM Car_Rental_Office__c 
-                                                               WHERE id IN: officeIdSet];
+            Decimal newValue = (Decimal) aggr.get('carNum');
 
-            for (Car_Rental_Office__c office_i : officesWithZeroCars) {
-                office_i.Number_Of_Related_Cars__c = 0;
+            if (office.Number_Of_Related_Cars__c != newValue) {
+                officeRecordsMap.get(officeId).Number_Of_Related_Cars__c = newValue;
             }
-            if (!officesWithZeroCars.isEmpty()) {
-                update officesWithZeroCars;
-            }   
         }
+        
+        for (Car_Rental_Office__c office_i : officeSet) {
+            office_i.Number_Of_Related_Cars__c = 0;
+        }
+
+        update new List<Car_Rental_Office__c>(officeSet);
+        update officeRecordsMap.values();
     }
 
     public void finish(Database.BatchableContext bc) {

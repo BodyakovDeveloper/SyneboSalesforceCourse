@@ -1,4 +1,4 @@
-public with sharing class CarHandler {
+public class CarHandler {
 
     public static void changeHorsePowerToZeroOnUnsuitableValue(List<Car__c> cars) {
         for (Car__c car_i : cars) {
@@ -9,56 +9,48 @@ public with sharing class CarHandler {
     }
 
     public static void changeCarsCountRelatedToOffice(List<Car__c> carList) {
-        System.debug(carList);
-        Set<Id> carIdSet = new Set<Id>();
-
-        for (Car__c car_i : carList) {
-                carIdSet.add(car_i.Id);
+        Set<Id> garagesId = new Set<Id>();
+        for(Car__c car_i : carList) {
+            garagesId.add(car_i.Car_Rental_Garage__c);
         }
-
-        System.debug(carIdSet);
-       // [SELECT Id, Car_Rental_Garage__r.Car_Rental_Office__r.Number_Of_Related_Cars__c
-        //FROM Car__c]
-
-        List<AggregateResult>  aggrs =  [SELECT Car_Rental_Garage__r.Car_Rental_Office__c off, count(Id) carQuantity
-                                         FROM Car__c 
-                                         WHERE Id IN: carIdSet
-                                         GROUP BY Car_Rental_Garage__r.Car_Rental_Office__c];
-
-        List<Car__c> carListWithOldQuantityInOff = [SELECT Id, Car_Rental_Garage__r.Car_Rental_Office__c, Car_Rental_Garage__r.Car_Rental_Office__r.Number_Of_Related_Cars__c 
-                                                    FROM Car__c 
-                                                    WHERE Id IN: carList];
+        Map<Id, Car_Rental_Garage__c> garageRecordsMap = new Map<Id, Car_Rental_Garage__c>([SELECT Car_Rental_Office__c FROM Car_Rental_Garage__c WHERE Id IN :garagesId]);
+        Set<Id> officesIdSet = new Set<Id>();
         
-        System.debug(carListWithOldQuantityInOff);
-        Map<Id, Decimal> carMapWithOldQuantityInOff = new Map<Id, Decimal>();
-        Set<Id> officeIdSet = new Set<Id>();
-
-        for (Car__c car_i : carListWithOldQuantityInOff) {
-            Id officeId = car_i.Car_Rental_Garage__r.Car_Rental_Office__c;
-            officeIdSet.add(officeId);
-            carMapWithOldQuantityInOff.put(officeId, car_i.Car_Rental_Garage__r.Car_Rental_Office__r.Number_Of_Related_Cars__c);
+        for (Car_Rental_Garage__c garage_i : garageRecordsMap.values()) {
+            officesIdSet.add(garage_i.Car_Rental_Office__c);
         }
-        List<Car_Rental_Office__c> carListToUpdate = new List<Car_Rental_Office__c>();
-        System.debug(carMapWithOldQuantityInOff);
+        
+        Map<Id, Car_Rental_Office__c> officeRecordsMap = new Map<Id, Car_Rental_Office__c>([SELECT Id, Number_Of_Related_Cars__c FROM Car_Rental_Office__c WHERE Id IN : officesIdSet]);
+        Set<Car_Rental_Office__c> officeSet = new Set<Car_Rental_Office__c>();
+
+        for(Car_Rental_Office__c office_i : officeRecordsMap.values()) {
+            officeSet.add(office_i);
+        }
+
+        List<AggregateResult> aggrs = [SELECT Car_Rental_Garage__r.Car_Rental_Office__c, count(Id) carNum
+                                       FROM Car__c
+                                       WHERE Active__c = true AND Car_Rental_Garage__r.Car_Rental_Office__c IN: officesIdSet
+                                       GROUP BY Car_Rental_Garage__r.Car_Rental_Office__c];
+
         for (AggregateResult aggr : aggrs) {
-            Id officeId = (Id)aggr.get('off');
-            Decimal oldQuantity = carMapWithOldQuantityInOff.get(officeId);
-            Decimal newQuantity = (Decimal)aggr.get('carQuantity');
-            System.debug(oldQuantity);
-            System.debug(newQuantity);
-            if (newQuantity != oldQuantity) {
-                System.debug('not equ');
-                Car_Rental_Office__c office = new Car_Rental_Office__c(Id = officeId, Number_Of_Related_Cars__c = newQuantity);
-                carListToUpdate.add(office);
-            }
-            System.debug(aggr.Id);
-            System.debug(aggr.get('carQuantity'));
-        }
-        System.debug(carListToUpdate);
-        update carListToUpdate;
-        
-        System.debug(carIdSet);
 
-       // System.enqueueJob(new GetJsonPlaceholderPostsQueueable());
+            Id officeId = (id) aggr.get('Car_Rental_Office__c');
+            Car_Rental_Office__c office = officeRecordsMap.get(officeId);
+            if (officeSet.contains(office)) {
+                officeSet.remove(office);
+            }
+            Decimal newValue = (Decimal) aggr.get('carNum');
+
+            if (office.Number_Of_Related_Cars__c != newValue) {
+                officeRecordsMap.get(officeId).Number_Of_Related_Cars__c = newValue;
+            }
+        }
+        
+        for (Car_Rental_Office__c office_i : officeSet) {
+            office_i.Number_Of_Related_Cars__c = 0;
+        }
+
+        update new List<Car_Rental_Office__c>(officeSet);
+        update officeRecordsMap.values();
     }
 }
