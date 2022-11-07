@@ -34,12 +34,16 @@ global with sharing class RestServicePlaceholderPosts {
         RestResponse res = RestContext.response;
         try {
             Placeholder_Post__c jsonCalloutObject = (Placeholder_Post__c) JSON.deserialize(req.requestBody.toString(), Placeholder_Post__c.class);
+            if (jsonCalloutObject.Post_Id__c == null) {
+                throw new ExternalObjectException('Post Id cannot be null');
+            }
             insert jsonCalloutObject;
             res.addHeader('Content-Type', 'application/json');
             res.responseBody = Blob.valueOf(JSON.serialize(jsonCalloutObject));
             res.statusCode = 201;
         } catch (Exception e) {
-            setExceptionResponse(e); 
+            res.responseBody = Blob.valueOf(e.getMessage());
+            res.statusCode = 500;
         }
     }
 
@@ -97,6 +101,6 @@ global with sharing class RestServicePlaceholderPosts {
 
     private static void setExceptionResponse(Exception e) {
         RestContext.response.responseBody = Blob.valueOf('{ "message" : "' + e + '"}');
-        RestContext.response.statusCode = 500;
+        RestContext.response.statusCode = 404;
     }
 }

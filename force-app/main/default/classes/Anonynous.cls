@@ -1,6 +1,2 @@
-List<AggregateResult>  aggrs = [SELECT Car_Rental_Garage__r.Car_Rental_Office__c, count(Id)carNum
-FROM Car__c 
-WHERE Active__c = true AND Car_Rental_Garage__r.Car_Rental_Office__c IN: officeIdSet
-GROUP BY Car_Rental_Garage__r.Car_Rental_Office__c];
-
-System.debug(aggrs);
+Car__c newCar = new Car__c(Name = 'Test', Brand__c = 'Volkswagen', Car_Rental_Garage__c = 'a097S000002tLi3QAE', Price__c = 12321);
+insert newCar;

@@ -6,9 +6,8 @@ public class GetJsonPlaceholderPostsQueueable implements Queueable, Database.All
 
         request.setEndpoint('callout:Json_Placeholder_Named_Credential/posts');
         request.setMethod('GET');
-        
         HttpResponse response = http.send(request);
-        System.debug(response.getStatusCode());
+
         // If the request is successful, parse the JSON response
         if (response.getStatusCode() == 200) {
             List<Placeholder_Post__c> calloutObjects = new List<Placeholder_Post__c>();
@@ -23,6 +22,6 @@ public class GetJsonPlaceholderPostsQueueable implements Queueable, Database.All
             }
             upsert calloutObjects Post_Id__c;
         }
-        System.enqueueJob(new GetPlaceholderCommentsQueueable());
+        //System.enqueueJob(new GetPlaceholderCommentsQueueable());
     }
 }

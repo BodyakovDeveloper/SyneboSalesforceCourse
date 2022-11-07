@@ -32,15 +32,13 @@ public class CarHandler {
                                        WHERE Active__c = true AND Car_Rental_Garage__r.Car_Rental_Office__c IN: officesIdSet
                                        GROUP BY Car_Rental_Garage__r.Car_Rental_Office__c];
 
-        for (AggregateResult aggr : aggrs) {
-
+                                       for (AggregateResult aggr : aggrs) {
             Id officeId = (id) aggr.get('Car_Rental_Office__c');
             Car_Rental_Office__c office = officeRecordsMap.get(officeId);
             if (officeSet.contains(office)) {
                 officeSet.remove(office);
             }
             Decimal newValue = (Decimal) aggr.get('carNum');
-
             if (office.Number_Of_Related_Cars__c != newValue) {
                 officeRecordsMap.get(officeId).Number_Of_Related_Cars__c = newValue;
             }
