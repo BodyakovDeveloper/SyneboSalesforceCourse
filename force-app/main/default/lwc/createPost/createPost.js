@@ -69,7 +69,7 @@ export default class CreatePost extends LightningElement {
                     this.dispatchEvent(
                         new ShowToastEvent({
                             title: 'Success',
-                            message: 'Account created Succesfully',
+                            message: 'Post created Succesfully',
                             variant: 'success',
                         }),
                     );
