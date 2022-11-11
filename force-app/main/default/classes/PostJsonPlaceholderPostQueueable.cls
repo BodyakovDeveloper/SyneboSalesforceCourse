@@ -16,6 +16,5 @@ public class PostJsonPlaceholderPostQueueable implements Queueable, Database.All
         request.setBody(JSON.serialize(postWrapper));
 
         HttpResponse response = http.send(request);
-        System.debug(response);
     }
 }

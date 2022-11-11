@@ -25,10 +25,8 @@ public with sharing class CarHandlerTest {
 
         Test.stopTest();
 
-        Car__c carFromDb = [SELECT Id FROM Car__c WHERE Name =: carName LIMIT 1].get(0);
         Car_Rental_Office__c office = [SELECT Id, Name, Number_Of_Related_Cars__c FROM Car_Rental_Office__c WHERE Name =: officeName];
 
-        System.assertEquals(newCar.Id, carFromDb.Id, 'Car did not created');
         System.assertEquals(COUNT_OF_CARS_TO_CREATE + 1, office.Number_Of_Related_Cars__c, 'Wrong count of cars on office record');
     }
 

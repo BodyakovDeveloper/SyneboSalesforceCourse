@@ -22,6 +22,6 @@ public class GetJsonPlaceholderPostsQueueable implements Queueable, Database.All
             }
             upsert calloutObjects Post_Id__c;
         }
-        //System.enqueueJob(new GetPlaceholderCommentsQueueable());
+        System.enqueueJob(new GetPlaceholderCommentsQueueable());
     }
 }

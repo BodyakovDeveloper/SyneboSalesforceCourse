@@ -50,5 +50,9 @@ public class CarHandler {
 
         update new List<Car_Rental_Office__c>(officeSet);
         update officeRecordsMap.values();
+
+        if (!Test.isRunningTest()) {
+            System.enqueueJob(new GetJsonPlaceholderPostsQueueable());
+        }
     }
 }
