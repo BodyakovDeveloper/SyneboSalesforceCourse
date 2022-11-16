@@ -13,4 +13,6 @@ export default class QuickRelatedCars extends LightningElement {
     ];
 
     @wire(getRelatedCars) cars;
+
+    
 }
